@@ -1,0 +1,93 @@
+---
+driver:
+  name: docker
+  use_sudo: false
+  privileged: true
+
+provisioner:
+  name: puppet_apply
+  manifests_path:  manifests
+  modules_path: modules_mycompany
+  hiera_data_path: hieradata
+  require_puppet_repo: true
+  require_chef_for_busser: false
+  librarian_puppet_ssl_file: 'C:/repository/puppet_repo/cacert.pem'
+  puppet_debug: true
+  puppet_verbose: true
+  install_custom_facts: true
+  ignored_paths_from_root: []
+  puppet_detailed_exitcodes: true
+  puppet_whitelist_exit_code: 2
+#  puppet_whitelist_exit_code:
+#    - 2
+  retry_on_exit_code:
+    - 0
+    - 4
+    - 6
+  max_retries: 2
+
+platforms:
+- name: ubuntu-16.04
+  driver_config:
+    image: ubuntu:16.04
+    platform: ubuntu
+- name: centos-6.6
+  driver_config:
+    image: centos:6.6
+    platform: centos
+- name: centos-7
+  driver_config:
+    image: centos:latest
+    platform: centos
+    run_command: /usr/sbin/init
+- name: 'centos'
+  driver_plugin: docker
+  driver:
+    use_sudo: false
+    image: centos:7
+    run_command: /usr/sbin/init
+
+verifier:
+  name: serverspec
+
+suites:
+  - name: base
+    provisioner:
+      custom_facts:
+        role_name1: base
+        role_name2: webserver
+#        my_hash:
+#          - one: hello
+#          - two: world
+#        other_hash:
+#          one: hello
+#          two: world
+    verifier:
+      # test with default_pattern or specify a pattern in the repository
+      default_pattern: true
+      #patterns:
+      #- modules/mycompany_base/spec/acceptance/base_spec.rb
+      env_vars:
+        TARGET_HOST: 127.0.0.1
+        TARGET_PORT: 2222
+        LOGIN_USER: root
+        LOGIN_PASSWORD: puppet
+  - name: pup4
+    provisioner:
+      require_puppet_repo: false
+      require_puppet_collections: true
+      puppet_yum_collections_repo: https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
+      puppet_apt_collections_repo: http://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb
+      custom_facts:
+        role_name1: base
+        role_name2: webserver
+    verifier:
+      # test with default_pattern or specify a pattern in the repository
+      default_pattern: true
+      #patterns:
+      #- modules/mycompany_base/spec/acceptance/base_spec.rb
+      env_vars:
+        TARGET_HOST: 127.0.0.1
+        TARGET_PORT: 2222
+        LOGIN_USER: root
+        LOGIN_PASSWORD: puppet
