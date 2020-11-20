@@ -11,7 +11,7 @@ provisioner:
   hiera_data_path: hieradata
   require_puppet_repo: true
   require_chef_for_busser: false
-  librarian_puppet_ssl_file: 'C:/repository/puppet_repo/cacert.pem'
+  librarian_puppet_ssl_file: 'C:/repository/puppet_docker_repo/cacert.pem'
   puppet_debug: true
   puppet_verbose: true
   install_custom_facts: true
@@ -27,31 +27,185 @@ provisioner:
   max_retries: 2
 
 platforms:
-- name: ubuntu-16.04
-  driver_config:
-    image: ubuntu:16.04
-    platform: ubuntu
-- name: centos-6.6
-  driver_config:
-    image: centos:6.6
-    platform: centos
-- name: centos-7
-  driver_config:
-    image: centos:latest
-    platform: centos
-    run_command: /usr/sbin/init
-- name: 'centos'
-  driver_plugin: docker
-  driver:
-    use_sudo: false
-    image: centos:7
-    run_command: /usr/sbin/init
+  - name: centos-6-pup5
+    provisioner:
+      puppet_yum_repo: https://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
+      puppet_yum_collections_repo: http://yum.puppetlabs.com/puppet5/puppet5-release-el-6.noarch.rpm
+    driver_config:
+      image: centos:6.6
+      platform: centos
+  - name: centos-7-pup5
+    provisioner:
+      puppet_yum_repo: https://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
+      puppet_yum_collections_repo: http://yum.puppetlabs.com/puppet5/puppet5-release-el-7.noarch.rpm
+    driver:
+      image: centos:7
+      run_command: /usr/sbin/init
+  - name: centos-7-pup6
+    provisioner:
+      puppet_yum_repo: https://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
+      puppet_yum_collections_repo: http://yum.puppetlabs.com/puppet6/puppet6-release-el-7.noarch.rpm
+    driver:
+      image: centos:7
+      run_command: /usr/sbin/init
+  - name: centos-8-pup6
+    provisioner:
+      puppet_yum_repo: https://yum.puppetlabs.com/puppetlabs-release-el-8.noarch.rpm
+      puppet_yum_collections_repo: http://yum.puppetlabs.com/puppet6/puppet6-release-el-8.noarch.rpm
+    driver_config:
+      image: centos:8
+      platform: centos
+  - name: debian-8-pup5
+    provisioner:
+#      custom_pre_install_command: |
+#        sudo apt-get -y install apt-transport-https
+      puppet_apt_repo: https://apt.puppetlabs.com/puppetlabs-release-trusty.deb
+      puppet_apt_collections_repo: http://apt.puppetlabs.com/puppet5-release-trusty.deb
+    driver_config:
+      image: debian:8
+      platform: debian
+  - name: debian-9-pup5
+    provisioner:
+#      custom_pre_install_command: |
+#        sudo apt-get -y install apt-transport-https
+      puppet_apt_repo: https://apt.puppetlabs.com/puppetlabs-release-xenial.deb
+      puppet_apt_collections_repo: http://apt.puppetlabs.com/puppet5-release-xenial.deb
+    driver_config:
+      image: debian:9
+      platform: debian
+  - name: debian-9-pup6
+    provisioner:
+      puppet_apt_repo: https://apt.puppetlabs.com/puppetlabs-release-xenial.deb
+      puppet_apt_collections_repo: http://apt.puppetlabs.com/puppet6-release-xenial.deb
+    driver_config:
+      image: debian:9
+      platform: debian
+  - name: opensuse-42-pup5
+    driver_config:
+      image: opensuse/leap:42.3
+      platform: opensuse
+    provisioner:
+#      custom_pre_install_command: |
+#        sudo zypper addrepo -n puppet5 -f -G http://yum.puppetlabs.com/puppet5/sles/12/x86_64 puppet5
+#        sudo http_proxy=<%= ENV['http_proxy'] %> https_proxy=<%= ENV['https_proxy'] %> zypper install -y puppet-agent kmod
+  - name: opensuse-15-pup5
+    driver_config:
+      image: opensuse/leap:15
+      platform: opensuse
+    provisioner:
+#      custom_pre_install_command: |
+#        sudo zypper addrepo -n puppet5 -f -G http://yum.puppetlabs.com/puppet5/sles/12/x86_64 puppet5
+#        sudo http_proxy=<%= ENV['http_proxy'] %> https_proxy=<%= ENV['https_proxy'] %> zypper install -y puppet-agent
+  - name: opensuse-15-pup6
+    driver_config:
+      image: opensuse/leap:15
+      platform: opensuse
+    provisioner:
+#      custom_pre_install_command: |
+#        sudo zypper addrepo -n puppet6 -f -G http://yum.puppetlabs.com/puppet6/sles/12/x86_64 puppet6
+#        sudo http_proxy=<%= ENV['http_proxy'] %> https_proxy=<%= ENV['https_proxy'] %> zypper install -y puppet-agent
+  - name: oracle-6-pup5
+    driver_config:
+      image: oraclelinux:6
+      platform: rhel
+    provisioner:
+      puppet_yum_repo: https://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
+      puppet_yum_collections_repo: http://yum.puppetlabs.com/puppet5/puppet5-release-el-6.noarch.rpm
+  - name: oracle-7-pup5
+    driver_config:
+      image: oraclelinux:7
+      platform: rhel
+    provisioner:
+      puppet_yum_repo: https://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
+      puppet_yum_collections_repo: http://yum.puppetlabs.com/puppet5/puppet5-release-el-7.noarch.rpm
+  - name: oracle-7-pup6
+    driver_config:
+      image: oraclelinux:7
+      platform: rhel
+    provisioner:
+      puppet_yum_repo: https://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
+      puppet_yum_collections_repo: http://yum.puppetlabs.com/puppet6/puppet6-release-el-7.noarch.rpm
+  - name: ubuntu-16-04-pup5
+    driver_config:
+      image: ubuntu:16.04
+      platform: ubuntu
+    provisioner:
+#      custom_pre_install_command: |
+#        sudo apt-get -y install apt-transport-https
+      puppet_apt_repo: https://apt.puppetlabs.com/puppetlabs-release-xenial.deb
+      puppet_apt_collections_repo: http://apt.puppetlabs.com/puppet5-release-xenial.deb
+  - name: ubuntu-18-04-pup5
+    driver_config:
+      image: ubuntu:18.04
+      platform: ubuntu
+    provisioner:
+      puppet_apt_repo: https://apt.puppetlabs.com/puppetlabs-release-xenial.deb
+      puppet_apt_collections_repo: http://apt.puppetlabs.com/puppet5-release-bionic.deb
+  - name: ubuntu-18-04-pup6
+    driver_config:
+      image: ubuntu:18.04
+      platform: ubuntu
+    provisioner:
+      puppet_apt_repo: https://apt.puppetlabs.com/puppetlabs-release-xenial.deb
+      puppet_apt_collections_repo: http://apt.puppetlabs.com/puppet6-release-bionic.deb
+  - name: ubuntu-19-10-pup6
+    driver_config:
+      image: ubuntu:19.10
+      platform: ubuntu
+    provisioner:
+      puppet_apt_repo: https://apt.puppetlabs.com/puppetlabs-release-xenial.deb
+      puppet_apt_collections_repo: http://apt.puppetlabs.com/puppet6-release-bionic.deb
+  - name: ubuntu-20-04-pup6
+    driver_config:
+      image: ubuntu:20.04
+      platform: ubuntu
+    provisioner:
+      puppet_apt_repo: https://apt.puppetlabs.com/puppetlabs-release-xenial.deb
+      puppet_apt_collections_repo: http://apt.puppetlabs.com/puppet6-release-bionic.deb
+
+#platforms:
+#- name: ubuntu-20.04
+#  driver_config:
+#    image: ubuntu:20.04
+#    platform: ubuntu
+#- name: ubuntu-19.10
+#  driver_config:
+#    image: ubuntu:19.10
+#    platform: ubuntu
+#- name: ubuntu-17.04
+#  driver_config:
+#    image: ubuntu:17.04
+#    platform: ubuntu
+#- name: ubuntu-16.04
+#  driver_config:
+#    image: ubuntu:16.04
+#    platform: ubuntu
+#- name: centos-6.6
+#  driver_config:
+#    image: centos:6.6
+#    platform: centos
+#- name: centos-8
+#  driver_config:
+#    image: centos:8
+#    platform: centos
+##    run_command: /usr/sbin/init
+#- name: centos-7
+#  driver_config:
+#    image: centos:latest
+#    platform: centos
+#    run_command: /usr/sbin/init
+#- name: 'centos'
+#  driver_plugin: docker
+#  driver:
+#    use_sudo: false
+#    image: centos:7
+#    run_command: /usr/sbin/init
 
 verifier:
   name: serverspec
 
 suites:
-  - name: base
+  - name: ws
     provisioner:
       custom_facts:
         role_name1: base
@@ -72,22 +226,22 @@ suites:
         TARGET_PORT: 2222
         LOGIN_USER: root
         LOGIN_PASSWORD: puppet
-  - name: pup4
-    provisioner:
-      require_puppet_repo: false
-      require_puppet_collections: true
-      puppet_yum_collections_repo: https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
-      puppet_apt_collections_repo: http://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb
-      custom_facts:
-        role_name1: base
-        role_name2: webserver
-    verifier:
-      # test with default_pattern or specify a pattern in the repository
-      default_pattern: true
-      #patterns:
-      #- modules/mycompany_base/spec/acceptance/base_spec.rb
-      env_vars:
-        TARGET_HOST: 127.0.0.1
-        TARGET_PORT: 2222
-        LOGIN_USER: root
-        LOGIN_PASSWORD: puppet
+#  - name: pup4
+#    provisioner:
+#      require_puppet_repo: false
+#      require_puppet_collections: true
+#      puppet_yum_collections_repo: https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
+#      puppet_apt_collections_repo: http://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb
+#      custom_facts:
+#        role_name1: base
+#        role_name2: webserver
+#    verifier:
+#      # test with default_pattern or specify a pattern in the repository
+#      default_pattern: true
+#      #patterns:
+#      #- modules/mycompany_base/spec/acceptance/base_spec.rb
+#      env_vars:
+#        TARGET_HOST: 127.0.0.1
+#        TARGET_PORT: 2222
+#        LOGIN_USER: root
+#        LOGIN_PASSWORD: puppet
